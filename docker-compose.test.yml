@@ -1,0 +1,31 @@
+version: '3'
+services:
+  task:
+    build: ./task
+    restart: always
+    hostname: task
+    env_file:
+      - .env.test
+    networks:
+      - backend
+    links:
+      - db
+    ports:
+      - ${TASK_SERVICE_PORT}:${TASK_SERVICE_PORT}
+  db:
+    image: 'mongo:7.0.8'
+    restart: always
+    hostname: db
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    volumes:
+      - "./db/init/:/docker-entrypoint-initdb.d/"
+    networks:
+      - backend
+    env_file:
+      - .env.test
+    ports:
+      - 27017:27017
+networks:
+  backend:
+    driver: bridge
